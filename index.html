@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communication Digitale • Masterclass (5 Intervenants × 3 Pages)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Rubik:wght@700;800;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-mat: #093c1f;
+      --grid-line: rgba(255, 255, 255, 0.18);
+      --grid-subline: rgba(255, 255, 255, 0.06);
+      --yellow: #FFE600;
+      --yellow-bright: #FFF500;
+      --red: #E60026;
+      --dark: #121212;
+      --white: #FFFFFF;
+      --shadow-hard: 6px 6px 0px #000000;
+      --shadow-hard-lg: 10px 10px 0px #000000;
+      --font-headline: 'Montserrat', 'Rubik', sans-serif;
+      --font-body: 'Montserrat', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-mat);
+      color: #111;
+      font-family: var(--font-body);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Tapis de découpe vert */
+    .mat-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-mat);
+      background-image: 
+        linear-gradient(var(--grid-line) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, var(--grid-line) 1.5px, transparent 1.5px),
+        linear-gradient(var(--grid-subline) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-subline) 1px, transparent 1px);
+      background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px;
+      overflow: hidden;
+    }
+
+    /* Rulers */
+    .mat-stage::before {
+      content: "0 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 180 190 200";
+      position: absolute;
+      top: 4px;
+      left: 20px;
+      right: 20px;
+      font-size: 10px;
+      font-family: 'Space Grotesk', monospace;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 40px;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* Top Progress Bar */
+    .progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--red) 0%, var(--yellow) 100%);
+      box-shadow: 0 0 10px rgba(255, 230, 0, 0.8);
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Slide Viewport */
+    .slide-viewport {
+      position: relative;
+      width: min(96vw, 177.78vh);
+      height: min(54vw, 95vh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(0.97) translateY(10px);
+      transition: opacity 0.3s cubic-bezier(0.2, 0.9, 0.3, 1),
+                  transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1),
+                  visibility 0.3s;
+      padding: 24px 36px 28px 36px;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    /* Starbursts */
+    .burst-wrap {
+      position: absolute;
+      pointer-events: none;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.9));
+    }
+    .burst-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .burst-text {
+      position: absolute;
+      text-align: center;
+      font-weight: 900;
+      font-family: var(--font-headline);
+      text-transform: uppercase;
+      line-height: 1.1;
+      padding: 6px;
+    }
+    .burst-top-right {
+      top: -10px;
+      right: -10px;
+      width: 130px;
+      height: 130px;
+    }
+    .burst-top-left {
+      top: -10px;
+      left: -10px;
+      width: 125px;
+      height: 125px;
+    }
+
+    /* Banners & Labels */
+    .sticker-yellow {
+      background: var(--yellow);
+      color: var(--red);
+      border: 4px solid var(--red);
+      box-shadow: var(--shadow-hard);
+      font-weight: 900;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 8px 18px;
+      letter-spacing: 0.5px;
+    }
+    .sticker-red {
+      background: var(--red);
+      color: var(--yellow);
+      border: 4px solid var(--yellow);
+      box-shadow: var(--shadow-hard);
+      font-weight: 900;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 8px 18px;
+      letter-spacing: 0.5px;
+    }
+    .sticker-white {
+      background: var(--white);
+      color: var(--dark);
+      border: 4px solid #000;
+      box-shadow: var(--shadow-hard);
+      font-weight: 900;
+      display: inline-block;
+      padding: 8px 18px;
+    }
+
+    .speaker-pill {
+      background: #111111;
+      color: var(--yellow);
+      border: 3px solid var(--yellow);
+      box-shadow: 4px 4px 0px #000;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 6px 16px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .slide-index-pill {
+      background: rgba(0, 0, 0, 0.75);
+      color: var(--yellow);
+      border: 2px solid var(--yellow);
+      font-weight: 900;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'Space Grotesk', monospace;
+    }
+
+    /* Tilts */
+    .tilt-left-sm { transform: rotate(-1.5deg); }
+    .tilt-left { transform: rotate(-3deg); }
+    .tilt-right-sm { transform: rotate(1.5deg); }
+    .tilt-right { transform: rotate(3deg); }
+
+    /* Pop Cards */
+    .pop-card {
+      background: var(--white);
+      color: var(--dark);
+      border: 4px solid #000000;
+      box-shadow: var(--shadow-hard);
+      border-radius: 10px;
+      padding: 18px 24px;
+      position: relative;
+    }
+
+    /* Typography */
+    .p-large {
+      font-size: 17px;
+      line-height: 1.55;
+      color: #222;
+      font-weight: 600;
+    }
+    .p-lead {
+      font-size: 19px;
+      line-height: 1.5;
+      font-weight: 700;
+      color: #111;
+    }
+    .list-large {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .list-large li {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #222;
+      position: relative;
+      padding-left: 28px;
+      font-weight: 600;
+    }
+    .list-large li::before {
+      content: "■";
+      position: absolute;
+      left: 4px;
+      top: 0px;
+      color: var(--red);
+      font-size: 14px;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 20;
+    }
+
+    .slide-title-banner {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* ==============================================================
+       NEW CREATIVE PHOTO CARD WITH DISTINCT BORDER & ENLARGED SIZE
+       ============================================================== */
+    .pop-photo-card {
+      position: relative;
+      background: #FFFFFF;
+      border: 5px solid #000000;
+      box-shadow: 10px 10px 0px #000000;
+      border-radius: 12px;
+      padding: 10px 10px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      flex-shrink: 0;
+      z-index: 15;
+    }
+    .pop-photo-card:hover {
+      transform: scale(1.03) rotate(-1deg);
+      box-shadow: 14px 14px 0px var(--red);
+    }
+    .tape-strip {
+      position: absolute;
+      top: -12px;
+      width: 70px;
+      height: 22px;
+      background: rgba(255, 230, 0, 0.85);
+      border: 2px dashed rgba(0, 0, 0, 0.4);
+      transform: rotate(-3deg);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      z-index: 20;
+    }
+    .img-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #F4F4F4;
+      border: 3px solid #000000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .card-img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+    }
+    .card-caption {
+      margin-top: 10px;
+      background: var(--red);
+      color: var(--yellow);
+      font-weight: 900;
+      font-size: 13px;
+      padding: 6px 12px;
+      border: 2px solid var(--yellow);
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+      width: calc(100% - 10px);
+      box-shadow: 3px 3px 0px #000;
+    }
+
+    .slide-footer-tip {
+      background: rgba(0, 0, 0, 0.7);
+      border-left: 6px solid var(--yellow);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 0 8px 8px 0;
+      margin-top: 8px;
+    }
+    .slide-footer-tip strong {
+      color: var(--yellow);
+    }
+
+    .overview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 38, 20, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      padding: 30px 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      overflow-y: auto;
+    }
+    .overview-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .overview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--yellow);
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+    .overview-card {
+      background: #FFFFFF;
+      border: 3px solid #000;
+      box-shadow: 4px 4px 0px #000;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.15s ease;
+    }
+    .overview-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--red);
+      box-shadow: 6px 6px 0px var(--red);
+    }
+    .overview-card.current {
+      background: var(--yellow);
+      border-color: var(--red);
+    }
+    .overview-card-speaker {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--red);
+      text-transform: uppercase;
+    }
+    .overview-card-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #111;
+      line-height: 1.25;
+    }
+
+    @media print {
+      body, .mat-stage {
+        overflow: visible !important;
+        height: auto !important;
+        background: var(--bg-mat) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .control-dock, .progress-bar-container, .overview-modal {
+        display: none !important;
+      }
+      .slide-viewport {
+        width: 100vw !important;
+        height: auto !important;
+        display: block !important;
+      }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        padding: 40px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mat-stage" id="stage">
+
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+
+    <main class="slide-viewport" id="viewport">
+
+      <!-- ==============================================================
+           SLIDE 01 : COUVERTURE (WILL SMITH GÉANT & ÉLÉMENTS DU BAS RETIRÉS)
+           ============================================================== -->
+      <section class="slide active" data-slide="1" data-speaker="Introduction" data-title="Couverture">
+        <div class="burst-wrap burst-top-left tilt-left">
+          <svg class="burst-svg" viewBox="0 0 100 100">
+            <polygon points="50,2 62,24 88,12 80,38 99,50 80,63 89,88 63,77 50,98 37,77 11,88 20,63 1,50 20,38 12,12 38,24" fill="#FFE600" stroke="#E60026" stroke-width="4"/>
+          </svg>
+          <div class="burst-text" style="color:#E60026; font-size:13px;">ÉDITION<br>2026</div>
+        </div>
+
+        <div class="burst-wrap burst-top-right tilt-right">
+          <svg class="burst-svg" viewBox="0 0 100 100">
+            <polygon points="50,2 65,22 93,10 82,36 100,52 81,66 88,94 62,80 48,99 35,79 9,90 18,64 0,48 19,34 9,8 36,21" fill="#E60026" stroke="#FFE600" stroke-width="4"/>
+          </svg>
+          <div class="burst-text" style="color:#FFE600; font-size:12px;">5 PERS.<br>EXPOSÉ</div>
+        </div>
+
+        <div style="flex:1; display:flex; align-items:center; justify-content:space-between; gap:36px; padding:0 30px; z-index:10;">
+          
+          <!-- Left: Big Title Stack -->
+          <div style="flex:1.2; display:flex; flex-direction:column; gap:18px;">
+            <div class="sticker-yellow tilt-left-sm" style="font-size:18px; padding:10px 24px; align-self:flex-start;">
+              MASTERCLASS COLLECTIVE • 5 INTERVENANTS
+            </div>
+
+            <div style="background:#E60026; border:6px solid #FFE600; box-shadow:12px 12px 0px #000; padding:28px 36px; border-radius:14px; transform:rotate(-1deg);">
+              <h1 style="color:#FFE600; font-size:52px; font-weight:900; letter-spacing:-1px; text-transform:uppercase; font-family:var(--font-headline); line-height:1.05; text-shadow:4px 4px 0px #000;">
+                LA COMMUNICATION DIGITALE
+              </h1>
+              <p style="color:#FFFFFF; font-size:20px; font-weight:800; margin-top:12px; letter-spacing:0.5px; line-height:1.35;">
+                FONDEMENTS • RÉSEAUX SOCIAUX • CONTENU • CONTEXTE PRO • RISQUES &amp; IA
+              </p>
+            </div>
+
+            <div class="sticker-white tilt-right-sm" style="font-size:16px; padding:10px 22px; align-self:flex-start;">
+              Présentation collective structurée et minutée
+            </div>
+          </div>
+
+          <!-- Right: Giant Will Smith with comic background -->
+          <div style="flex:0.9; display:flex; justify-content:center; align-items:center; position:relative;">
+            <div class="burst-wrap" style="width:340px; height:340px; position:absolute; z-index:1;">
+              <svg class="burst-svg" viewBox="0 0 100 100">
+                <polygon points="50,2 62,24 88,12 80,38 99,50 80,63 89,88 63,77 50,98 37,77 11,88 20,63 1,50 20,38 12,12 38,24" fill="#FFE600" stroke="#E60026" stroke-width="3.5"/>
+              </svg>
+            </div>
+            
+            <div class="pop-photo-card tilt-right" style="width:310px; z-index:2; padding:12px 12px 18px 12px;">
+              <div class="tape-strip"></div>
+              <div class="img-wrapper" style="background:#FFF;">
+                <img src="images/images (34).jpg" alt="Will Smith" style="width:100%; max-height:300px; object-fit:contain;">
+              </div>
+              <div class="card-caption" style="font-size:15px; padding:8px 14px;">REGARDEZ ÇA !</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 02 : ORGANISATION (AVENGERS SUR LA GAUCHE, CARTES À DROITE)
+           ============================================================== -->
+      <section class="slide" data-slide="2" data-speaker="Organisation" data-title="Organisation de l'équipe">
+        <div class="slide-header">
+          <div class="sticker-red tilt-left-sm" style="font-size:14px;">ORGANISATION DE L'EXPOSÉ</div>
+          <div class="slide-index-pill">02 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-yellow tilt-left-sm" style="font-size:24px; padding:8px 22px;">
+            RÉPARTITION DU GROUPE : 3 PAGES PAR INTERVENANT
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Photo on LEFT, 5 Speaker Cards in 2 rows on RIGHT -->
+          <div style="display:flex; gap:24px; align-items:center;">
+            
+            <!-- Left: Big Team Photo -->
+            
+    <div class="pop-photo-card tilt-left" style="width: 310px;" title="Avengers / Team Assemble">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (35).jpg" alt="Avengers / Team Assemble" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">LES 5 INTERVENANTS</div>
+    </div>
+  
+
+            <!-- Right: The 5 Speakers -->
+            <div style="flex:1; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div class="pop-card" style="border-left:8px solid #E60026; padding:12px 16px;">
+                <span class="speaker-pill" style="font-size:11px; padding:3px 8px;">INTERVENANT 1</span>
+                <h4 style="font-size:14px; font-weight:900; margin:6px 0 2px;">Partie 1 : Fondements</h4>
+                <p style="font-size:12px; color:#333;">Définition, Web 1.0 à 3.0 &amp; Canaux majeurs</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #FFE600; background:#FFFDE6; padding:12px 16px;">
+                <span class="speaker-pill" style="font-size:11px; padding:3px 8px; border-color:#000;">INTERVENANT 2</span>
+                <h4 style="font-size:14px; font-weight:900; margin:6px 0 2px;">Partie 2 : Réseaux</h4>
+                <p style="font-size:12px; color:#333;">Géants du contenu, TikTok, LinkedIn &amp; Matrice</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #E60026; padding:12px 16px;">
+                <span class="speaker-pill" style="font-size:11px; padding:3px 8px;">INTERVENANT 3</span>
+                <h4 style="font-size:14px; font-weight:900; margin:6px 0 2px;">Partie 3 : Contenu</h4>
+                <p style="font-size:12px; color:#333;">Objectifs SMART, Personas, Formats &amp; AIDA</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #000; padding:12px 16px;">
+                <span class="speaker-pill" style="font-size:11px; padding:3px 8px;">INTERVENANT 4</span>
+                <h4 style="font-size:14px; font-weight:900; margin:6px 0 2px;">Partie 4 : Entreprise</h4>
+                <p style="font-size:12px; color:#333;">Interne vs Externe, Nétiquette &amp; KPIs clés</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #00AA44; grid-column: span 2; padding:12px 16px;">
+                <span class="speaker-pill" style="font-size:11px; padding:3px 8px;">INTERVENANT 5</span>
+                <h4 style="font-size:14px; font-weight:900; margin:6px 0 2px;">Partie 5 : Enjeux Critiques &amp; IA</h4>
+                <p style="font-size:12px; color:#333;">E-réputation, Fake news, CNDP / RGPD &amp; Tendances futures</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Équilibre de présentation :</strong> Chaque membre de l'équipe prend la parole pour exactement 3 diapositives, assurant une parfaite fluidité orale et une évaluation juste par le jury.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 03 : INTERVENANT 1 (PAGE 1/3) - PHOTO DRAKE SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="3" data-speaker="Intervenant 1" data-title="1.1 Définition & Comparatif">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 1 • PAGE 1/3</div>
+          <div class="slide-index-pill">03 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            1.1 DÉFINITION &amp; RUPTURE AVEC LE TRADITIONNEL
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <div class="pop-card" style="background:#FFFDF0; border-left:8px solid #E60026; padding:14px 20px;">
+            <p class="p-lead">
+              <strong>Définition :</strong> La communication digitale rassemble toutes les actions d'information, de promotion et d'échange déployées via des canaux connectés. Elle transforme l'audience passive en communauté active et engagée.
+            </p>
+          </div>
+
+          <!-- LAYOUT: Big Drake on LEFT, Comparison Cards on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="Drake Hotline Bling">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (36).jpg" alt="Drake Hotline Bling" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">LE BON CHOIX DIGITAL</div>
+    </div>
+  
+
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border:4px solid #E60026; background:#FFF2F2; padding:12px 18px;">
+                <div class="sticker-red" style="font-size:12px; margin-bottom:6px;">MÉDIAS TRADITIONNELS</div>
+                <ul class="list-large" style="gap:6px;">
+                  <li><strong>Sens unique :</strong> Message descendant sans droit de réponse immédiat.</li>
+                  <li><strong>Coûts colossaux :</strong> Ticket d'entrée très élevé (TV, affichage 4x3, presse).</li>
+                  <li><strong>Ciblage de masse :</strong> Faible segmentation et forte déperdition.</li>
+                </ul>
+              </div>
+
+              <div class="pop-card" style="border:4px solid #008833; background:#F4FFF6; padding:12px 18px;">
+                <div class="sticker-yellow" style="font-size:12px; color:#006622; border-color:#006622; margin-bottom:6px;">COMMUNICATION DIGITALE</div>
+                <ul class="list-large" style="gap:6px;">
+                  <li><strong>Interactif :</strong> Commentaires, partages, avis et relation en direct.</li>
+                  <li><strong>Hyper-ciblé :</strong> Centres d'intérêt précis, données socio-démographiques et lieux.</li>
+                  <li><strong>Mesure en temps réel :</strong> Taux d'engagement, conversions et ROI calculables au centime.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Synthèse :</strong> On quitte définitivement la logique d'interruption publicitaire pour adopter une logique d'attraction basée sur la pertinence et la valeur ajoutée.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 04 : INTERVENANT 1 (PAGE 2/3) - PHOTO GALAXY BRAIN SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="4" data-speaker="Intervenant 1" data-title="1.2 Évolution du Web">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 1 • PAGE 2/3</div>
+          <div class="slide-index-pill">04 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            1.2 L'ÉVOLUTION DU WEB : TROIS RÉVOLUTIONS MAJEURES
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: 3 Evolution Cards stacked on LEFT, Big Photo on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+              <div class="pop-card" style="border-left:8px solid #555; padding:12px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="sticker-white" style="font-size:11px; padding:2px 8px;">1990 - 2004</span>
+                  <span style="font-weight:900; color:#555; font-size:13px;">READ-ONLY</span>
+                </div>
+                <h4 style="font-size:16px; font-weight:900; margin:4px 0;">Web 1.0 Statique</h4>
+                <p class="p-large" style="font-size:14px;">Pages vitrines simples et annuaires en ligne. L'internaute est simple spectateur passif sans interaction.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #E60026; background:#FFFBF0; padding:12px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="sticker-red" style="font-size:11px; padding:2px 8px;">2004 - 2020</span>
+                  <span style="font-weight:900; color:#E60026; font-size:13px;">READ &amp; WRITE</span>
+                </div>
+                <h4 style="font-size:16px; font-weight:900; margin:4px 0; color:#E60026;">Web 2.0 Social</h4>
+                <p class="p-large" style="font-size:14px;">Émergence des réseaux sociaux et blogs. Les utilisateurs créent le contenu (UGC) et participent activement.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #008833; background:#F2FFF6; padding:12px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="sticker-yellow" style="font-size:11px; color:#000; border-color:#000; padding:2px 8px;">2020 &amp; AU-DELÀ</span>
+                  <span style="font-weight:900; color:#008833; font-size:13px;">GENERATE &amp; OWN</span>
+                </div>
+                <h4 style="font-size:16px; font-weight:900; margin:4px 0; color:#008833;">Web 3.0 &amp; IA Générative</h4>
+                <p class="p-large" style="font-size:14px;">Web intelligent et prédictif. L'IA générative et les algorithmes personnalisent chaque flux en temps réel.</p>
+              </div>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 300px;" title="Galaxy Brain Web Evolution">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (37).jpg" alt="Galaxy Brain Web Evolution" class="card-img" style="max-height: 270px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">ÉVOLUTION DU WEB</div>
+    </div>
+  
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Impact direct :</strong> Les communicants ne créent plus seulement pour un lecteur passif, mais pour alimenter des algorithmes qui analysent l'engagement en temps réel.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 05 : INTERVENANT 1 (PAGE 3/3) - PHOTO SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="5" data-speaker="Intervenant 1" data-title="1.3 Chiffres & Canaux">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 1 • PAGE 3/3</div>
+          <div class="slide-index-pill">05 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            1.3 CHIFFRES CLÉS &amp; LES 5 CANAUX INCONTOURNABLES
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Photo on LEFT, Stats & Channels on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="Mind Blown / Khaby Lame">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (38).jpg" alt="Mind Blown / Khaby Lame" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">LE CHOC DES CHIFFRES</div>
+    </div>
+  
+
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border:4px solid #000; padding:14px 20px;">
+                <div class="sticker-white" style="font-size:12px; margin-bottom:8px;">DONNÉES DU MARCHÉ</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                  <div style="background:#FFF8E6; border:2px solid #E60026; padding:10px; border-radius:6px; text-align:center;">
+                    <div style="font-size:30px; font-weight:900; color:#E60026; font-family:var(--font-headline);">5.4 Mds</div>
+                    <div style="font-size:12px; font-weight:700;">Internautes dans le monde (67% pop)</div>
+                  </div>
+                  <div style="background:#FFF8E6; border:2px solid #E60026; padding:10px; border-radius:6px; text-align:center;">
+                    <div style="font-size:30px; font-weight:900; color:#E60026; font-family:var(--font-headline);">~33.5 M</div>
+                    <div style="font-size:12px; font-weight:700;">Internautes au Maroc (Taux ~88%)</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pop-card" style="border:4px solid #000; background:#FFFDF0; padding:14px 20px;">
+                <div class="sticker-yellow" style="font-size:12px; margin-bottom:6px;">LES 5 CANAUX MAJEURS</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Site Web :</strong> Le siège officiel de l'organisation.</li>
+                  <li><strong>E-mailing :</strong> Le champion incontesté du retour sur investissement.</li>
+                  <li><strong>Réseaux Sociaux :</strong> Notoriété de masse et création de communauté.</li>
+                  <li><strong>WhatsApp &amp; Mobile :</strong> Réactivité directe et proximité client.</li>
+                  <li><strong>Moteurs de recherche (SEO/SEA) :</strong> Capter l'intention active.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Conclusion de l'Intervenant 1 :</strong> Une stratégie digitale performante repose sur l'équilibre entre un canal propriétaire (site web) et des canaux d'acquisition sociale.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 06 : INTERVENANT 2 (PAGE 1/3) - PHOTO SPIDERMAN SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="6" data-speaker="Intervenant 2" data-title="2.1 Géants du Contenu">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 2 • PAGE 1/3</div>
+          <div class="slide-index-pill">06 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            2.1 LES GÉANTS HISTORIQUES (FACEBOOK, INSTAGRAM, YOUTUBE)
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: 3 Platform Cards on LEFT, Photo on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+              <div class="pop-card" style="border-left:8px solid #1877F2; padding:12px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="sticker-white" style="font-size:12px; color:#1877F2;">FACEBOOK</span>
+                  <span style="font-size:12px; font-weight:800; color:#555;">25 - 65+ ans</span>
+                </div>
+                <p class="p-large" style="font-size:14px; margin-top:4px;">
+                  Le colosse intergénérationnel. Incontournable pour la force de ses groupes communautaires locaux et sa Marketplace d'achat/vente directe.
+                </p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #E1306C; background:#FFFBFD; padding:12px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="sticker-red" style="font-size:12px;">INSTAGRAM</span>
+                  <span style="font-size:12px; font-weight:800; color:#E1306C;">18 - 35 ans</span>
+                </div>
+                <p class="p-large" style="font-size:14px; margin-top:4px;">
+                  La vitrine visuelle et aspirationnelle. Dominée par les Reels pour toucher une nouvelle audience et les Stories pour engager au quotidien.
+                </p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #FF0000; padding:12px 18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="sticker-yellow" style="font-size:12px; color:#FF0000; border-color:#FF0000;">YOUTUBE</span>
+                  <span style="font-size:12px; font-weight:800; color:#FF0000;">Universel</span>
+                </div>
+                <p class="p-large" style="font-size:14px; margin-top:4px;">
+                  Deuxième moteur de recherche au monde. Les contenus y sont durables et consultés pendant des années (tutos, podcasts et démonstrations).
+                </p>
+              </div>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 300px;" title="Spider-Man Pointing">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (39).jpg" alt="Spider-Man Pointing" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">ILS SE COPIENT TOUS !</div>
+    </div>
+  
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Complémentarité :</strong> Instagram pour susciter l'intérêt visuel, YouTube pour asseoir l'autorité dans la durée, Facebook pour fédérer les communautés locales.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 07 : INTERVENANT 2 (PAGE 2/3) - PHOTO WOMAN CAT SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="7" data-speaker="Intervenant 2" data-title="2.1 Titans Viralité & B2B">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 2 • PAGE 2/3</div>
+          <div class="slide-index-pill">07 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            2.1 VIRALITÉ, MONDE PROFESSIONNEL &amp; CONVERSATION DIRECTE
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Big Photo on LEFT, 4 Grid Cards on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 310px;" title="Woman Yelling at Cat">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (51).jpg" alt="Woman Yelling at Cat" class="card-img" style="max-height: 270px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">TIKTOK & WHATSAPP GAGNENT</div>
+    </div>
+  
+
+            <div style="flex:1; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div class="pop-card" style="border-top:5px solid #000; padding:12px 16px;">
+                <div class="sticker-yellow" style="font-size:11px; color:#000; border-color:#000; margin-bottom:4px;">TIKTOK</div>
+                <h4 style="font-size:15px; font-weight:900;">La machine virale</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Algorithme fondé sur l'intérêt : visibilité massive sans abonnés, authenticité et créativité spontanée.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #0A66C2; padding:12px 16px;">
+                <div class="sticker-white" style="font-size:11px; color:#0A66C2; border-color:#0A66C2; margin-bottom:4px;">LINKEDIN</div>
+                <h4 style="font-size:15px; font-weight:900;">L'arène B2B Pro</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Réseau numéro un pour la prospection d'affaires, le recrutement et le personal branding des dirigeants.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #111; padding:12px 16px;">
+                <div class="sticker-white" style="font-size:11px; margin-bottom:4px;">X (TWITTER)</div>
+                <h4 style="font-size:15px; font-weight:900;">L'instantanéité</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Transmission de l'information en temps réel, veille journalistique et gestion de crise en direct.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #25D366; background:#F4FFF6; padding:12px 16px;">
+                <div class="sticker-red" style="font-size:11px; margin-bottom:4px;">WHATSAPP BIZ</div>
+                <h4 style="font-size:15px; font-weight:900;">La vente directe</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Taux d'ouverture record (>95%). Catalogues intégrés, réponses automatiques et closing immédiat.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Spécificité d'usage :</strong> WhatsApp Business s'impose comme le levier de conversion le plus pragmatique pour valider et conclure des ventes en direct avec les clients.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 08 : INTERVENANT 2 (PAGE 3/3) - PHOTO TWO BUTTONS SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="8" data-speaker="Intervenant 2" data-title="2.2 Publics & Matrice">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 2 • PAGE 3/3</div>
+          <div class="slide-index-pill">08 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            2.2 PUBLICS &amp; MATRICE DE SÉLECTION STRATÉGIQUE
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Table on LEFT, Two Buttons Photo on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div class="pop-card" style="flex:1; padding:14px 18px;">
+              <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead>
+                  <tr style="background:#FFE600; color:#E60026; text-transform:uppercase; font-size:12px; font-weight:900;">
+                    <th style="padding:8px; border:2px solid #000; text-align:left;">Objectif</th>
+                    <th style="padding:8px; border:2px solid #000; text-align:left;">Réseaux Recommandés</th>
+                    <th style="padding:8px; border:2px solid #000; text-align:left;">Format</th>
+                    <th style="padding:8px; border:2px solid #000; text-align:left;">Indicateur Clé</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:2px solid #DDD;">
+                    <td style="padding:8px; font-weight:800; border:2px solid #000;">Notoriété rapide</td>
+                    <td style="padding:8px; border:2px solid #000;">TikTok, Reels, Shorts</td>
+                    <td style="padding:8px; border:2px solid #000;">Vidéos courtes verticales</td>
+                    <td style="padding:8px; font-weight:700; border:2px solid #000;">Portée &amp; Partages</td>
+                  </tr>
+                  <tr style="background:#FBFBFB; border-bottom:2px solid #DDD;">
+                    <td style="padding:8px; font-weight:800; border:2px solid #000;">Vente B2B</td>
+                    <td style="padding:8px; border:2px solid #000;">LinkedIn, Site Web &amp; E-mail</td>
+                    <td style="padding:8px; border:2px solid #000;">Carrousels PDF, analyses</td>
+                    <td style="padding:8px; font-weight:700; border:2px solid #000;">Leads qualifiés</td>
+                  </tr>
+                  <tr style="border-bottom:2px solid #DDD;">
+                    <td style="padding:8px; font-weight:800; border:2px solid #000;">E-Commerce B2C</td>
+                    <td style="padding:8px; border:2px solid #000;">Instagram, Meta Ads, WhatsApp</td>
+                    <td style="padding:8px; border:2px solid #000;">Démos de produits, offres</td>
+                    <td style="padding:8px; font-weight:700; border:2px solid #000;">Commandes</td>
+                  </tr>
+                  <tr style="background:#FBFBFB;">
+                    <td style="padding:8px; font-weight:800; border:2px solid #000;">Fidélisation &amp; SAV</td>
+                    <td style="padding:8px; border:2px solid #000;">WhatsApp Business, E-mail</td>
+                    <td style="padding:8px; border:2px solid #000;">Messagerie directe, alertes</td>
+                    <td style="padding:8px; font-weight:700; border:2px solid #000;">Réachat &amp; CSAT</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 280px;" title="Daily Struggle Two Buttons">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (40).jpg" alt="Daily Struggle Two Buttons" class="card-img" style="max-height: 250px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">QUEL RÉSEAU CHOISIR ?</div>
+    </div>
+  
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Règle d'or de l'Intervenant 2 :</strong> Ne cherchez pas à occuper tous les réseaux à la fois. Choisissez deux plateformes prioritaires et maîtrisez leurs codes avant de vous disperser.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 09 : INTERVENANT 3 (PAGE 1/3) - PHOTO ROLL SAFE SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="9" data-speaker="Intervenant 3" data-title="3.1 Objectifs SMART & Persona">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 3 • PAGE 1/3</div>
+          <div class="slide-index-pill">09 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            3.1 OBJECTIFS S.M.A.R.T. &amp; DÉFINITION DU BUYER PERSONA
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Photo on LEFT, SMART & Persona Cards on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="Roll Safe Smart Thinking">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (41).jpg" alt="Roll Safe Smart Thinking" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">PERSONA AVANT TOUT</div>
+    </div>
+  
+
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border-top:6px solid #FFE600; background:#FFFDE6; padding:12px 18px;">
+                <div class="sticker-red" style="font-size:12px; margin-bottom:6px;">1. LA MÉTHODE S.M.A.R.T.</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Spécifique &amp; Mesurable :</strong> Un objectif chiffré clair sans flou.</li>
+                  <li><strong>Atteignable &amp; Réaliste :</strong> Ambitieux mais adapté à vos ressources.</li>
+                  <li><strong>Temporel :</strong> Fixer une date d'échéance ferme (ex: sous 90 jours).</li>
+                </ul>
+              </div>
+
+              <div class="pop-card" style="border-top:6px solid #E60026; padding:12px 18px;">
+                <div class="sticker-yellow" style="font-size:12px; margin-bottom:6px;">2. LE BUYER PERSONA</div>
+                <p class="p-large" style="font-size:14px; margin-bottom:6px;">
+                  Le portrait-robot semi-fictif du client idéal à convaincre :
+                </p>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Points de douleur :</strong> Problèmes majeurs qu'il cherche à résoudre.</li>
+                  <li><strong>Canaux préférés :</strong> Lieux où il s'informe et passe son temps en ligne.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Principe fondamental :</strong> Si votre message s'adresse à tout le monde sans distinction, il ne captera l'attention de personne. Le persona garantit la pertinence de chaque mot.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 10 : INTERVENANT 3 (PAGE 2/3) - PHOTO GRU SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="10" data-speaker="Intervenant 3" data-title="3.2 Formats & Règle 80/20">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 3 • PAGE 2/3</div>
+          <div class="slide-index-pill">10 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            3.2 LES 4 PILIERS DE CONTENU &amp; LA RÈGLE DES 80/20
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: 4 Pillars stacked on LEFT, Big Gru on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div style="flex:1; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div class="pop-card" style="border-top:5px solid #0066CC; padding:12px 16px;">
+                <div class="sticker-white" style="font-size:11px; padding:2px 8px; margin-bottom:4px;">PILIER 1 (40%)</div>
+                <h4 style="font-size:15px; font-weight:900;">ÉDUQUER</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Tutoriels, astuces et infographies pour asseoir l'autorité technique et générer des sauvegardes.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #E60026; padding:12px 16px;">
+                <div class="sticker-red" style="font-size:11px; padding:2px 8px; margin-bottom:4px;">PILIER 2 (20%)</div>
+                <h4 style="font-size:15px; font-weight:900;">INSPIRER</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Témoignages réels et réussites inspirantes pour créer une connexion émotionnelle sincère.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #FFE600; background:#FFFDE6; padding:12px 16px;">
+                <div class="sticker-yellow" style="font-size:11px; padding:2px 8px; margin-bottom:4px;">PILIER 3 (20%)</div>
+                <h4 style="font-size:15px; font-weight:900;">DIVERTIR</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Coulisses d'équipe, memes adaptés et autodérision pour humaniser la marque et générer des likes.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #00AA44; padding:12px 16px;">
+                <div class="sticker-white" style="font-size:11px; padding:2px 8px; border-color:#00AA44; color:#00AA44; margin-bottom:4px;">PILIER 4 (20%)</div>
+                <h4 style="font-size:15px; font-weight:900;">CONVERTIR</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Présentations d'offres et démonstrations concrètes pour déclencher l'acte d'achat.</p>
+              </div>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 280px;" title="Gru's Plan">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (42).jpg" alt="Gru's Plan" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">LA STRATÉGIE 80/20</div>
+    </div>
+  
+
+          </div>
+
+          <div style="background:#FFE600; border:4px solid #E60026; box-shadow:6px 6px 0px #000; padding:10px 18px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:14px; font-weight:900; color:#E60026; text-transform:uppercase;">LA RÈGLE DES 80 / 20 :</span>
+            <span style="font-size:14px; font-weight:800; color:#111;">Offrir 80% de valeur gratuite et utile pour légitimer les 20% d'appels commerciaux !</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 11 : INTERVENANT 3 (PAGE 3/3) - PHOTO BONGO CAT SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="11" data-speaker="Intervenant 3" data-title="3.3 Calendrier & Copywriting">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 3 • PAGE 3/3</div>
+          <div class="slide-index-pill">11 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            3.3 CALENDRIER ÉDITORIAL &amp; COPYWRITING A.I.D.A.
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Photo on LEFT, Calendar & AIDA on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="Cat Typing Fast">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (43).jpg" alt="Cat Typing Fast" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">COPYWRITING EN ACTION</div>
+    </div>
+  
+
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border-top:6px solid #000; padding:12px 18px;">
+                <div class="sticker-white" style="font-size:12px; margin-bottom:6px;">LE CALENDRIER ÉDITORIAL</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Outils :</strong> Pilotage via Notion, Trello ou Buffer.</li>
+                  <li><strong>Constance :</strong> La régularité de diffusion bat le talent ponctuel.</li>
+                  <li><strong>Recyclage :</strong> Une idée forte se décline en carrousel, vidéo et e-mail.</li>
+                </ul>
+              </div>
+
+              <div class="pop-card" style="border-top:6px solid #E60026; background:#FFFBF0; padding:12px 18px;">
+                <div class="sticker-red" style="font-size:12px; margin-bottom:6px;">LA MÉTHODE COPYWRITING A.I.D.A.</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:13px; font-weight:700;">
+                  <div style="background:#FFF; padding:6px 10px; border-left:3px solid #E60026; border-radius:4px;">
+                    <strong>Attention :</strong> L'accroche des 3 premières secondes.
+                  </div>
+                  <div style="background:#FFF; padding:6px 10px; border-left:3px solid #FFE600; border-radius:4px;">
+                    <strong>Intérêt :</strong> Poser le problème que vit le lecteur.
+                  </div>
+                  <div style="background:#FFF; padding:6px 10px; border-left:3px solid #000; border-radius:4px;">
+                    <strong>Désir :</strong> Expliquer les bénéfices de la solution.
+                  </div>
+                  <div style="background:#FFF; padding:6px 10px; border-left:3px solid #00AA44; border-radius:4px;">
+                    <strong>Action :</strong> Appel au clic clair et sans hésitation.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Conclusion de l'Intervenant 3 :</strong> Une accroche percutante détermine 80% du succès d'une publication. Soignez le titre avant de rédiger le corps du texte.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 12 : INTERVENANT 4 (PAGE 1/3) - PHOTO OFFICE HANDSHAKE SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="12" data-speaker="Intervenant 4" data-title="4.1 Interne vs Externe">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 4 • PAGE 1/3</div>
+          <div class="slide-index-pill">12 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            4.1 L'ENTREPRISE CONNECTÉE : COMMUNICATION INTERNE VS EXTERNE
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Interne/Externe on LEFT, Handshake Photo on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border-top:6px solid #000; padding:14px 18px;">
+                <div class="sticker-white" style="font-size:12px; margin-bottom:6px;">COMMUNICATION INTERNE</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Outils :</strong> Microsoft Teams, Slack, Notion et intranets.</li>
+                  <li><strong>Missions :</strong> Tuer les boucles d'e-mails interminables et coordonner les équipes en travail hybride.</li>
+                  <li><strong>Piège :</strong> L'infobésité et l'interruption permanente.</li>
+                </ul>
+              </div>
+
+              <div class="pop-card" style="border-top:6px solid #E60026; background:#FFFBFB; padding:14px 18px;">
+                <div class="sticker-red" style="font-size:12px; margin-bottom:6px;">COMMUNICATION EXTERNE</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Outils :</strong> Pages corporate, relations médias numériques et newsletters.</li>
+                  <li><strong>Missions :</strong> Développer la réputation de marque et rassurer les partenaires.</li>
+                  <li><strong>Exigence :</strong> Alignement total entre le discours et la réalité vécue.</li>
+                </ul>
+              </div>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 290px;" title="The Office Handshake">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (44).jpg" alt="The Office Handshake" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">ACCORD INTERNE & EXTERNE</div>
+    </div>
+  
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Symétrie des attentions :</strong> La qualité perçue par les clients à l'extérieur est le reflet direct de la clarté et de la sérénité des échanges vécus à l'intérieur.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 13 : INTERVENANT 4 (PAGE 2/3) - PHOTO DISAPPOINTED FAN SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="13" data-speaker="Intervenant 4" data-title="4.2 Nétiquette & Déontologie">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 4 • PAGE 2/3</div>
+          <div class="slide-index-pill">13 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            4.2 NÉTIQUETTE : LES 5 RÈGLES DU PROFESSIONNALISME EN LIGNE
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Photo on LEFT, 5 Etiquette Rules on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="Disappointed Cricket Fan">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (45).jpg" alt="Disappointed Cricket Fan" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">SANS NÉTIQUETTE...</div>
+    </div>
+  
+
+            <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+              <div class="pop-card" style="border-left:6px solid #E60026; padding:10px 16px;">
+                <h4 style="font-size:14px; font-weight:900;">1. L'E-mail Soigné</h4>
+                <p style="font-size:13px; color:#333;">Objet explicite, concision en 3 paragraphes, politesse et signature complète.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:6px solid #0A66C2; padding:10px 16px;">
+                <h4 style="font-size:14px; font-weight:900;">2. LinkedIn Éthique</h4>
+                <p style="font-size:13px; color:#333;">Invitations personnalisées, ton courtois et refus du démarchage automatique agressif.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:6px solid #000; padding:10px 16px;">
+                <h4 style="font-size:14px; font-weight:900;">3. Confidentialité Absolue</h4>
+                <p style="font-size:13px; color:#333;">Zéro partage de captures d'écran de messageries internes ou de données sensibles.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:6px solid #FFE600; background:#FFFDE6; padding:10px 16px;">
+                <h4 style="font-size:14px; font-weight:900;">4. Droit à la Déconnexion</h4>
+                <p style="font-size:13px; color:#333;">Respecter les soirées et week-ends. Programmer les envois pour les heures de bureau.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Définition :</strong> La nétiquette désigne la charte de bonne conduite et de politesse régissant les échanges sur les réseaux professionnels et collaboratifs.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 14 : INTERVENANT 4 (PAGE 3/3) - PHOTO STONKS SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="14" data-speaker="Intervenant 4" data-title="4.3 Marque Employeur & KPIs">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 4 • PAGE 3/3</div>
+          <div class="slide-index-pill">14 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            4.3 MARQUE EMPLOYEUR &amp; L'ENTONNOIR DES VRAIS KPIS
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Advocacy & KPIs on LEFT, Stonks Photo on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border-top:6px solid #FFE600; background:#FFFDE6; padding:12px 18px;">
+                <div class="sticker-red" style="font-size:12px; margin-bottom:6px;">MARQUE EMPLOYEUR &amp; ADVOCACY</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Salariés Ambassadeurs :</strong> Leurs posts génèrent <strong>8 fois plus d'engagement</strong> que ceux de la page officielle !</li>
+                  <li><strong>Confiance :</strong> Les candidats croient les témoignages spontanés d'employés.</li>
+                </ul>
+              </div>
+
+              <div class="pop-card" style="border-top:6px solid #000; padding:12px 18px;">
+                <div class="sticker-white" style="font-size:12px; margin-bottom:6px;">L'ENTONNOIR DE KPIS CLÉS</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>1. Notoriété :</strong> Impressions, portée et évolution des abonnés.</li>
+                  <li><strong>2. Engagement :</strong> Partages, enregistrements et qualité des échanges.</li>
+                  <li><strong>3. Conversion :</strong> Clics vers le site (CTR), coût par acquisition et ventes.</li>
+                </ul>
+              </div>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 290px;" title="Stonks Meme">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (46).jpg" alt="Stonks Meme" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">DES KPIS EN FLÈCHE !</div>
+    </div>
+  
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Conclusion de l'Intervenant 4 :</strong> Évitez les indicateurs de vanité comme les simples likes. Fondez vos décisions sur l'engagement qualitatif et le retour sur investissement tangible.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 15 : INTERVENANT 5 (PAGE 1/3) - PHOTO THIS IS FINE SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="15" data-speaker="Intervenant 5" data-title="5.1 E-Réputation & Bad Buzz">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 5 • PAGE 1/3</div>
+          <div class="slide-index-pill">15 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            5.1 GESTION DE L'E-RÉPUTATION &amp; PROTOCOLE DE CRISE S.T.O.P.
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: This is Fine Photo on LEFT, Crisis Protocols on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="This is Fine Dog in Flames">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (47).jpg" alt="This is Fine Dog in Flames" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">EN PLEIN BAD BUZZ...</div>
+    </div>
+  
+
+            <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
+              <div class="pop-card" style="border-top:6px solid #E60026; padding:12px 18px;">
+                <div class="sticker-red" style="font-size:12px; margin-bottom:6px;">L'ANATOMIE D'UN BAD BUZZ</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>Viralité instantanée :</strong> Les algorithmes amplifient les émotions négatives.</li>
+                  <li><strong>L'Effet Streisand :</strong> Tenter de censurer ou masquer une critique ne fait que démultiplier l'exposition de la crise par cent !</li>
+                </ul>
+              </div>
+
+              <div class="pop-card" style="border-top:6px solid #FFE600; background:#FFFDF0; padding:12px 18px;">
+                <div class="sticker-yellow" style="font-size:12px; margin-bottom:6px;">LE PROTOCOLE DE CRISE S.T.O.P.</div>
+                <ul class="list-large" style="gap:6px; font-size:14px;">
+                  <li><strong>S - Suspendre :</strong> Couper immédiatement toutes les publications programmées.</li>
+                  <li><strong>T - Traquer :</strong> Analyser la source de l'incident et la véracité des faits.</li>
+                  <li><strong>O - Organiser :</strong> Réunir la cellule de décision et désigner un porte-parole.</li>
+                  <li><strong>P - Publier :</strong> Reconnaître les faits avec humilité et mesures concrètes.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Constat d'expérience :</strong> Une entreprise qui affronte une crise avec authenticité, rapidité et transparence ressort souvent plus estimée qu'auparavant.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 16 : INTERVENANT 5 (PAGE 2/3) - PHOTO FRY SUR LA DROITE
+           ============================================================== -->
+      <section class="slide" data-slide="16" data-speaker="Intervenant 5" data-title="5.2 Fake News & Cadre Légal">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 5 • PAGE 2/3</div>
+          <div class="slide-index-pill">16 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            5.2 FAKE NEWS, SÉCURITÉ &amp; CADRE LÉGAL DES DONNÉES
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: 3 Legal/Ethics Cards on LEFT, Fry Photo on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+              <div class="pop-card" style="border-left:8px solid #E60026; padding:10px 16px;">
+                <h4 style="font-size:15px; font-weight:900;">1. Fake News &amp; Déontologie</h4>
+                <p class="p-large" style="font-size:13px;">Les fausses nouvelles circulent six fois plus vite que les informations vérifiées. Vérification impérative avant tout partage sous peine de ruiner sa crédibilité.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #C1272D; background:#FFFBFB; padding:10px 16px;">
+                <h4 style="font-size:15px; font-weight:900; color:#C1272D;">2. Données Personnelles (CNDP &amp; RGPD)</h4>
+                <p class="p-large" style="font-size:13px;">Au Maroc, la Loi 09-08 supervisée par la CNDP et le RGPD en Europe imposent le consentement explicite et la sécurité stricte des données collectées.</p>
+              </div>
+
+              <div class="pop-card" style="border-left:8px solid #000; padding:10px 16px;">
+                <h4 style="font-size:15px; font-weight:900;">3. Lutte contre le Cyberharcèlement</h4>
+                <p class="p-large" style="font-size:13px;">Modération active des commentaires haineux, protection de l'intégrité des équipes et signalement systématique des abus.</p>
+              </div>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 290px;" title="Futurama Fry Squinting">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (48).jpg" alt="Futurama Fry Squinting" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">INFO OU FAKE NEWS ?</div>
+    </div>
+  
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Exigence 2026 :</strong> La conformité juridique et l'éthique des données ne sont plus une charge administrative : elles constituent un argument commercial de confiance auprès des consommateurs.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 17 : INTERVENANT 5 (PAGE 3/3) - PHOTO EPIC HANDSHAKE SUR LA GAUCHE
+           ============================================================== -->
+      <section class="slide" data-slide="17" data-speaker="Intervenant 5" data-title="5.3 Mégatendances du Futur">
+        <div class="slide-header">
+          <div class="speaker-pill">INTERVENANT 5 • PAGE 3/3</div>
+          <div class="slide-index-pill">17 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-red tilt-left-sm" style="font-size:24px; padding:8px 20px;">
+            5.3 LES 4 NOUVELLES TENDANCES DU DIGITAL
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <!-- LAYOUT: Photo on LEFT, 4 Future Trends on RIGHT -->
+          <div style="display:flex; gap:22px; align-items:center;">
+            
+            
+    <div class="pop-photo-card tilt-left" style="width: 290px;" title="Epic Handshake Predator">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (49).jpg" alt="Epic Handshake Predator" class="card-img" style="max-height: 260px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">ALLIANCE HUMAIN & IA</div>
+    </div>
+  
+
+            <div style="flex:1; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div class="pop-card" style="border-top:5px solid #FFE600; background:#FFFDE6; padding:12px 16px;">
+                <div class="sticker-red" style="font-size:11px; padding:2px 8px; margin-bottom:4px;">TENDANCE 1</div>
+                <h4 style="font-size:15px; font-weight:900;">IA Générative</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">ChatGPT, Claude, Midjourney : un copilote puissant pour concevoir et décliner des contenus 10 fois plus vite.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #E60026; padding:12px 16px;">
+                <div class="sticker-yellow" style="font-size:11px; padding:2px 8px; margin-bottom:4px;">TENDANCE 2</div>
+                <h4 style="font-size:15px; font-weight:900;">Social Commerce</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">TikTok Shop &amp; Instagram Shopping : l'achat direct sans quitter l'app réduit à zéro les frictions de commande.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #000; padding:12px 16px;">
+                <div class="sticker-white" style="font-size:11px; padding:2px 8px; margin-bottom:4px;">TENDANCE 3</div>
+                <h4 style="font-size:15px; font-weight:900;">Vidéo Courte &amp; UGC</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">User-Generated Content : les vidéos authentiques au smartphone convertissent 3 fois mieux que les spots de pub.</p>
+              </div>
+
+              <div class="pop-card" style="border-top:5px solid #00AA44; padding:12px 16px;">
+                <div class="sticker-white" style="font-size:11px; padding:2px 8px; border-color:#00AA44; color:#00AA44; margin-bottom:4px;">TENDANCE 4</div>
+                <h4 style="font-size:15px; font-weight:900;">Micro-Influence</h4>
+                <p class="p-large" style="font-size:13px; line-height:1.4;">Les créateurs de niche (5k à 50k abonnés) sont plébiscités pour leur engagement sincère et leur proximité.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Conclusion de l'Intervenant 5 :</strong> L'intelligence artificielle prend en charge les tâches répétitives, permettant aux communicants de se concentrer sur l'essentiel : l'émotion et l'écoute humaine.
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 18 : CONCLUSION COLLECTIVE (PHOTO GATSBY SUR LA DROITE)
+           ============================================================== -->
+      <section class="slide" data-slide="18" data-speaker="Synthèse" data-title="Conclusion & Questions">
+        <div class="burst-wrap burst-top-left tilt-left">
+          <svg class="burst-svg" viewBox="0 0 100 100">
+            <polygon points="50,2 62,24 88,12 80,38 99,50 80,63 89,88 63,77 50,98 37,77 11,88 20,63 1,50 20,38 12,12 38,24" fill="#FFE600" stroke="#E60026" stroke-width="4"/>
+          </svg>
+          <div class="burst-text" style="color:#E60026; font-size:12px;">FIN</div>
+        </div>
+
+        <div class="burst-wrap burst-top-right tilt-right">
+          <svg class="burst-svg" viewBox="0 0 100 100">
+            <polygon points="50,2 65,22 93,10 82,36 100,52 81,66 88,94 62,80 48,99 35,79 9,90 18,64 0,48 19,34 9,8 36,21" fill="#E60026" stroke="#FFE600" stroke-width="4"/>
+          </svg>
+          <div class="burst-text" style="color:#FFE600; font-size:12px;">DÉBAT</div>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:18px; z-index:10;">
+          <div class="sticker-yellow tilt-left-sm" style="font-size:16px; padding:8px 24px;">
+            SYNTHÈSE COLLECTIVE DES 5 INTERVENANTS
+          </div>
+
+          <div style="background:#E60026; border:6px solid #FFE600; box-shadow:10px 10px 0px #000; padding:18px 42px; border-radius:12px; transform:rotate(-1deg); max-width:880px;">
+            <h2 style="color:#FFE600; font-size:42px; font-weight:900; text-transform:uppercase; font-family:var(--font-headline); line-height:1.1; text-shadow:4px 4px 0px #000;">
+              MERCI POUR VOTRE ATTENTION
+            </h2>
+            <p style="color:#FFFFFF; font-size:20px; font-weight:800; margin-top:8px;">
+              PLACE AUX QUESTIONS DU JURY ET AUX ÉCHANGES
+            </p>
+          </div>
+
+          <!-- LAYOUT: Takeaways on LEFT, Big Gatsby Photo on RIGHT -->
+          <div style="display:flex; gap:26px; align-items:center; justify-content:center;">
+            <div class="pop-card" style="max-width:540px; text-align:left; padding:14px 22px;">
+              <ul class="list-large" style="gap:6px; font-size:14px;">
+                <li><strong>1. Stratégie :</strong> L'outil est au service de l'objectif, jamais l'inverse.</li>
+                <li><strong>2. Authenticité :</strong> Les publics se lient aux personnes sincères, pas aux discours figés.</li>
+                <li><strong>3. Constance :</strong> La régularité de diffusion bat le coup d'éclat éphémère.</li>
+                <li><strong>4. Données :</strong> Piloter ses investissements par les KPIs réels de conversion.</li>
+                <li><strong>5. Humain :</strong> Les technologies évoluent, le besoin d'écoute et d'émotion reste intact.</li>
+              </ul>
+            </div>
+
+            
+    <div class="pop-photo-card tilt-right" style="width: 280px;" title="Leonardo DiCaprio Gatsby Toast">
+      <div class="tape-strip"></div>
+      <div class="img-wrapper">
+        <img src="images/images (50).jpg" alt="Leonardo DiCaprio Gatsby Toast" class="card-img" style="max-height: 250px;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-caption">MERCI POUR VOTRE ATTENTION !</div>
+    </div>
+  
+          </div>
+
+          <div style="background:rgba(0,0,0,0.75); border:2px solid var(--yellow); padding:8px 28px; border-radius:30px; color:#FFF; font-size:14px; font-weight:700;">
+            Exposé Communication Digitale • Équipe au complet prête pour vos questions
+          </div>
+        </div>
+      </section>
+
+      <!-- ==============================================================
+           SLIDE 19 : SOURCES & BIBLIOGRAPHIE OFFICIELLES
+           ============================================================== -->
+      <section class="slide" data-slide="19" data-speaker="Références" data-title="Sources & Bibliographie">
+        <div class="slide-header">
+          <div class="sticker-red tilt-left-sm" style="font-size:14px;">VALIDATION ACADÉMIQUE</div>
+          <div class="slide-index-pill">19 / 19</div>
+        </div>
+
+        <div class="slide-title-banner">
+          <div class="sticker-yellow tilt-left-sm" style="font-size:24px; padding:8px 22px;">
+            SOURCES, ÉTUDES OFFICIELLES &amp; BIBLIOGRAPHIE
+          </div>
+        </div>
+
+        <div class="slide-content">
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            
+            <!-- Card 1: Rapports Mondiaux -->
+            <div class="pop-card" style="border-top:6px solid #E60026; padding:16px 20px;">
+              <div class="sticker-red" style="font-size:12px; margin-bottom:8px;">1. RAPPORTS MONDIAUX</div>
+              <ul class="list-large" style="gap:6px; font-size:13px;">
+                <li><strong>We Are Social &amp; Meltwater :</strong> <em>Digital Global Overview Report (2024–2026)</em> — Données mondiales sur les 5,4 milliards d'internautes et le temps d'écran social.</li>
+                <li><strong>DataReportal Insights :</strong> Pénétration des réseaux sociaux et comportements d'usage par région.</li>
+              </ul>
+            </div>
+
+            <!-- Card 2: Données Maroc -->
+            <div class="pop-card" style="border-top:6px solid #FFE600; background:#FFFDE6; padding:16px 20px;">
+              <div class="sticker-yellow" style="font-size:12px; margin-bottom:8px;">2. DONNÉES DU ROYAUME DU MAROC</div>
+              <ul class="list-large" style="gap:6px; font-size:13px;">
+                <li><strong>ANRT Maroc (Observatoire des TIC) :</strong> Tableaux de bord trimestriels sur le parc Internet (~33,5 millions d'usagers, pénétration mobile ~88% et déploiement 4G/5G).</li>
+                <li><strong>HCP (Haut-Commissariat au Plan) :</strong> Études sur l'accès des ménages et des entreprises aux technologies numériques.</li>
+              </ul>
+            </div>
+
+            <!-- Card 3: Ouvrages Théoriques -->
+            <div class="pop-card" style="border-top:6px solid #000; padding:16px 20px;">
+              <div class="sticker-white" style="font-size:12px; margin-bottom:8px;">3. OUVRAGES &amp; CADRES THÉORIQUES</div>
+              <ul class="list-large" style="gap:6px; font-size:13px;">
+                <li><strong>Philip Kotler, Hermawan Kartajaya &amp; Iwan Setiawan :</strong> <em>Marketing 4.0 &amp; 5.0 (Passage au digital et technologies intelligentes)</em>.</li>
+                <li><strong>George T. Doran :</strong> <em>Méthodologie S.M.A.R.T.</em> (Management Review, 1981).</li>
+                <li><strong>E. St. Elmo Lewis :</strong> <em>Modèle hiérarchique A.I.D.A.</em> (Attention, Intérêt, Désir, Action).</li>
+              </ul>
+            </div>
+
+            <!-- Card 4: Cadre Juridique -->
+            <div class="pop-card" style="border-top:6px solid #00AA44; padding:16px 20px;">
+              <div class="sticker-white" style="font-size:12px; border-color:#00AA44; color:#00AA44; margin-bottom:8px;">4. CADRE JURIDIQUE &amp; ÉTUDES SECTORIELLES</div>
+              <ul class="list-large" style="gap:6px; font-size:13px;">
+                <li><strong>CNDP Maroc :</strong> <em>Loi n° 09-08</em> relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel.</li>
+                <li><strong>Union Européenne :</strong> <em>Règlement Général sur la Protection des Données (RGPD 2016/679)</em>.</li>
+                <li><strong>LinkedIn B2B Institute &amp; Meta Business Insights :</strong> Baromètres sur l'efficacité des contenus et l'Employee Advocacy.</li>
+              </ul>
+            </div>
+
+          </div>
+
+          <div class="slide-footer-tip">
+            <strong>Certification académique :</strong> Toutes les données chiffrées de cette présentation sont vérifiées et issues de rapports officiels actualisés pour l'année 2026.
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <div class="overview-modal" id="overviewModal">
+      <div class="overview-header">
+        <div>
+          <h2 style="color:var(--yellow); font-size:24px; font-weight:900; text-transform:uppercase;">
+            SOMMAIRE DES 19 PAGES (5 INTERVENANTS × 3 PAGES + SOURCES)
+          </h2>
+          <p style="color:#FFF; font-size:14px; font-weight:600;">Cliquez sur une diapositive pour y accéder directement</p>
+        </div>
+        <button id="closeOverviewBtn" class="sticker-red" style="font-size:13px; cursor:pointer;">FERMER (ÉCHAP)</button>
+      </div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </div>
+
+  </div>
+
+  <script>
+    (function() {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const totalSlides = slides.length;
+      let currentIndex = 0;
+
+      const progressBar = document.getElementById('progressBar');
+      const overviewModal = document.getElementById('overviewModal');
+      const closeOverviewBtn = document.getElementById('closeOverviewBtn');
+      const overviewGrid = document.getElementById('overviewGrid');
+
+      function goToSlide(index) {
+        if (index < 0) index = 0;
+        if (index >= totalSlides) index = totalSlides - 1;
+        if (index === currentIndex && slides[currentIndex].classList.contains('active')) return;
+
+        slides[currentIndex].classList.remove('active');
+        currentIndex = index;
+        slides[currentIndex].classList.add('active');
+
+        const pct = ((currentIndex + 1) / totalSlides) * 100;
+        if (progressBar) progressBar.style.width = `${pct}%`;
+
+        document.querySelectorAll('.overview-card').forEach((card, i) => {
+          if (i === currentIndex) card.classList.add('current');
+          else card.classList.remove('current');
+        });
+      }
+
+      function nextSlide() { goToSlide(currentIndex + 1); }
+      function prevSlide() { goToSlide(currentIndex - 1); }
+
+      function buildOverview() {
+        overviewGrid.innerHTML = '';
+        slides.forEach((slide, i) => {
+          const card = document.createElement('div');
+          card.className = 'overview-card' + (i === currentIndex ? ' current' : '');
+          const speaker = slide.getAttribute('data-speaker') || 'Équipe';
+          const title = slide.getAttribute('data-title') || `Slide ${i + 1}`;
+          card.innerHTML = `
+            <div class="overview-card-speaker">${speaker} • Slide ${String(i + 1).padStart(2, '0')}</div>
+            <div class="overview-card-title">${title}</div>
+          `;
+          card.addEventListener('click', () => {
+            goToSlide(i);
+            overviewModal.classList.remove('open');
+          });
+          overviewGrid.appendChild(card);
+        });
+      }
+
+      function toggleOverview() {
+        buildOverview();
+        overviewModal.classList.toggle('open');
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
+      if (closeOverviewBtn && overviewModal) {
+        closeOverviewBtn.addEventListener('click', () => overviewModal.classList.remove('open'));
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overviewModal.classList.contains('open')) {
+          overviewModal.classList.remove('open');
+          return;
+        }
+        if (overviewModal.classList.contains('open')) return;
+
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+          case ' ':
+          case 'Enter':
+          case 'PageDown':
+            e.preventDefault();
+            nextSlide();
+            break;
+          case 'ArrowLeft':
+          case 'ArrowUp':
+          case 'Backspace':
+          case 'PageUp':
+            e.preventDefault();
+            prevSlide();
+            break;
+          case 'f':
+          case 'F':
+            toggleFullscreen();
+            break;
+          case 'o':
+          case 'O':
+            toggleOverview();
+            break;
+          case 'p':
+          case 'P':
+            window.print();
+            break;
+          case 'Home':
+            goToSlide(0);
+            break;
+          case 'End':
+            goToSlide(totalSlides - 1);
+            break;
+        }
+      });
+
+      let touchStartX = 0;
+      window.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      window.addEventListener('touchend', (e) => {
+        const diffX = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diffX) > 40) {
+          if (diffX < 0) nextSlide();
+          else prevSlide();
+        }
+      }, { passive: true });
+
+      goToSlide(0);
+      buildOverview();
+    })();
+  </script>
+</body>
+</html>
